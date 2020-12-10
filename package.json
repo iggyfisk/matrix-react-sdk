@@ -95,6 +95,7 @@
     "react-beautiful-dnd": "^4.0.1",
     "react-dom": "^16.13.1",
     "react-focus-lock": "^2.4.1",
+    "react-responsive-pinch-zoom-pan": "^0.3.0",
     "react-transition-group": "^4.4.1",
     "resize-observer-polyfill": "^1.5.1",
     "rfc4648": "^1.4.0",

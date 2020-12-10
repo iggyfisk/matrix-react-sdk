@@ -26,6 +26,7 @@ import Modal from "../../../Modal";
 import * as sdk from "../../../index";
 import {Key} from "../../../Keyboard";
 import FocusLock from "react-focus-lock";
+import PinchZoomPan from 'react-responsive-pinch-zoom-pan';
 
 export default class ImageView extends React.Component {
     static propTypes = {
@@ -46,7 +47,8 @@ export default class ImageView extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { rotationDegrees: 0 };
+        this.state = { src: props.src };
+        this.imgRef = React.createRef();
     }
 
     onKeyDown = (ev) => {
@@ -86,16 +88,27 @@ export default class ImageView extends React.Component {
         return name;
     }
 
+    rotate = (rotation) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext("2d");
+      const img = this.imgRef.current;
+      canvas.width = img.naturalHeight;
+      canvas.height = img.naturalWidth;
+      ctx.imageSmoothingEnabled = false;
+
+      ctx.translate(rotation > 0 ? canvas.width : 0, rotation < 0 ? canvas.height : 0);
+      ctx.rotate(rotation);
+      ctx.drawImage(img, 0, 0);
+
+      this.setState({ src: canvas.toDataURL('image/png')});
+    }
+
     rotateCounterClockwise = () => {
-        const cur = this.state.rotationDegrees;
-        const rotationDegrees = (cur - 90) % 360;
-        this.setState({ rotationDegrees });
+        this.rotate(Math.PI / 2);
     };
 
     rotateClockwise = () => {
-        const cur = this.state.rotationDegrees;
-        const rotationDegrees = (cur + 90) % 360;
-        this.setState({ rotationDegrees });
+        this.rotate(Math.PI / -2);
     };
 
     render() {
@@ -180,9 +193,6 @@ export default class ImageView extends React.Component {
             </div>);
         }
 
-        const rotationDegrees = this.state.rotationDegrees;
-        const effectiveStyle = {transform: `rotate(${rotationDegrees}deg)`, ...style};
-
         return (
             <FocusLock
                 returnFocus={true}
@@ -195,7 +205,9 @@ export default class ImageView extends React.Component {
                 <div className="mx_ImageView_lhs">
                 </div>
                 <div className="mx_ImageView_content">
-                    <img src={this.props.src} title={this.props.name} style={effectiveStyle} className="mainImage" />
+                    <PinchZoomPan zoomButtons={false} maxScale={10} position={'center'}>
+                        <img src={this.state.src} title={this.props.name} ref={this.imgRef} style={style} className="mainImage" />
+                    </PinchZoomPan>
                     <div className="mx_ImageView_labelWrapper">
                         <div className="mx_ImageView_label">
                             <AccessibleButton className="mx_ImageView_rotateCounterClockwise" title={_t("Rotate Left")} onClick={ this.rotateCounterClockwise }>
