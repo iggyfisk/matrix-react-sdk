@@ -104,11 +104,11 @@ export default class ImageView extends React.Component {
     }
 
     rotateCounterClockwise = () => {
-        this.rotate(Math.PI / 2);
+        this.rotate(Math.PI / -2);
     };
 
     rotateClockwise = () => {
-        this.rotate(Math.PI / -2);
+        this.rotate(Math.PI / 2);
     };
 
     render() {
